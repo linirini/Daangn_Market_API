@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="546387c0-c3ba-45d1-bc62-7491f6754a1d" name="rising_camp_server_edu" url="http://linirini.site">
+        <fileTransfer rootFolder="/var/www/api-server-spring-boot-jdbc" accessType="SFTP" host="52.79.173.146" port="22" sshConfigId="cc0041c5-e4b3-417f-b518-c954efdd8e93" sshConfig="ubuntu@52.79.173.146:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

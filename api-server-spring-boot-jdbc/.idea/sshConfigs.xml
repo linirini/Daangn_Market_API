@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="52.79.173.146" id="cc0041c5-e4b3-417f-b518-c954efdd8e93" keyPath="C:\Users\2001y\Desktop\linirinilinrin\DEV\RisingCamp\linirini_server.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" useOpenSSHConfig="true" />
+    </configs>
+  </component>
+</project>

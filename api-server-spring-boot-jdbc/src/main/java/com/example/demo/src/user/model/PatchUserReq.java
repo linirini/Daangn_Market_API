@@ -1,15 +1,19 @@
 package com.example.demo.src.user.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatchUserReq {
-    private int userIdx;
-    private String userName;
+
+    @JsonProperty("user_id")
+    private int userId;
+    @JsonProperty("nick_name")
+    private String nickName;
+    @JsonProperty("profile_photo")
+    private String profilePhoto;
+
 }
