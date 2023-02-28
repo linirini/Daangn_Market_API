@@ -5,6 +5,7 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.interest.model.GetInterestRes;
 import com.example.demo.src.interest.model.PostInterestReq;
 import com.example.demo.src.interest.model.PostInterestRes;
+import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,15 @@ public class InterestController {
 
     @Autowired
     private final InterestProvider interestProvider;
-
     @Autowired
     private final InterestService interestService;
+    @Autowired
+    private final JwtService jwtService;
 
-
-    public InterestController(InterestProvider interestProvider, InterestService interestService) {
+    public InterestController(InterestProvider interestProvider, InterestService interestService, JwtService jwtService) {
         this.interestProvider = interestProvider;
         this.interestService = interestService;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -42,13 +44,19 @@ public class InterestController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostInterestRes> createInterest(@RequestBody PostInterestReq postInterestReq) {
-        if(postInterestReq.getPostId() == null){
+        if (postInterestReq.getPostId() == null) {
             return new BaseResponse<>(POST_INTEREST_EMPTY_POST_ID);
         }
-        if(postInterestReq.getUserId()==null){
+        if (postInterestReq.getUserId() == null) {
             return new BaseResponse<>(POST_INTEREST_EMPTY_USER_ID);
         }
         try {
+            //jwt에서 idx 추출.
+            int userIdByJwt = jwtService.getUserId();
+            //userIdx와 접근한 유저가 같은지 확인
+            if (postInterestReq.getUserId() != userIdByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             PostInterestRes postInterestRes = interestService.createInterest(postInterestReq);
             return new BaseResponse<>(postInterestRes);
         } catch (BaseException exception) {
@@ -66,6 +74,12 @@ public class InterestController {
     @GetMapping("")
     public BaseResponse<List<GetInterestRes>> getInterests(@RequestParam(value = "user-id") Integer userId) {
         try {
+            //jwt에서 idx 추출.
+            int userIdByJwt = jwtService.getUserId();
+            //userIdx와 접근한 유저가 같은지 확인
+            if (userId != userIdByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<GetInterestRes> getInterestRes = interestProvider.getInterestsByUserId(userId);
             return new BaseResponse<>(getInterestRes);
         } catch (BaseException exception) {
@@ -84,13 +98,11 @@ public class InterestController {
     public BaseResponse<String> deleteInterest(@PathVariable("interest-id") int interestId) throws BaseException {
         try {
             //jwt에서 idx 추출.
-            //int userIdxByJwt = jwtService.getUserIdx();
+            int userIdByJwt = jwtService.getUserId();
             //userIdx와 접근한 유저가 같은지 확인
-            //if (userIdx != userIdxByJwt) {
-            //    return new BaseResponse<>(INVALID_USER_JWT);
-            //}
-
-            //본인 확인 생략!
+            if (interestProvider.getInterest(interestId).getUserId() != userIdByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             interestService.deleteInterest(interestId);
             String result = "";
             return new BaseResponse<>(result);

@@ -14,5 +14,5 @@ public class PostLoginRes {
 
     @JsonProperty("user_id")
     private int userId;
-    //private String jwt;
+    private String jwt;
 }

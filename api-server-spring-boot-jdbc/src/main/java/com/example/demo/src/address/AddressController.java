@@ -5,6 +5,7 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.address.model.GetAddressRes;
 import com.example.demo.src.address.model.PostAddressReq;
 import com.example.demo.src.address.model.PostAddressRes;
+import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +20,16 @@ public class AddressController {
 
     @Autowired
     private final AddressProvider addressProvider;
-
     @Autowired
     private final AddressService addressService;
+    @Autowired
+    private final JwtService jwtService;
 
 
-    public AddressController(AddressProvider addressProvider, AddressService addressService) {
+    public AddressController(AddressProvider addressProvider, AddressService addressService, JwtService jwtService) {
         this.addressProvider = addressProvider;
         this.addressService = addressService;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -72,6 +75,12 @@ public class AddressController {
             throw new BaseException(PATCH_ADDRESS_EMPTY_USER_ID);
         }
         try{
+            //jwt에서 idx 추출.
+            int userIdByJwt = jwtService.getUserId();
+            //userIdx와 접근한 유저가 같은지 확인
+            if (addressProvider.getAddress(addressId).getUserId() != userIdByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             addressService.patchAddress(addressId, userId);
             String result = "";
             return new BaseResponse<>(result);
@@ -100,7 +109,7 @@ public class AddressController {
     }
 
     /**
-     * 내 동네 인증 횟수 조회 API
+     * 내 동네 삭제 API
      * [PATCH] /addresses/status/:address-id
      *
      * @return BaseResponse<GetAddressRes>
@@ -111,6 +120,12 @@ public class AddressController {
             throw new BaseException(PATCH_ADDRESS_EMPTY_ADDRESS_ID);
         }
         try{
+            //jwt에서 idx 추출.
+            int userIdByJwt = jwtService.getUserId();
+            //userIdx와 접근한 유저가 같은지 확인
+            if (addressProvider.getAddress(addressId).getUserId() != userIdByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             addressService.deleteAddress(addressId);
             String result = "";
             return new BaseResponse<>(result);

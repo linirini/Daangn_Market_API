@@ -1064,7 +1064,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <CollationName>utf8mb4_general_ci</CollationName>
     </table>
     <column id="302" parent="284" name="addressId">
-      <AutoIncrement>4</AutoIncrement>
+      <AutoIncrement>5</AutoIncrement>
       <DasType>bigint|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -2033,7 +2033,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     </column>
     <column id="461" parent="301" name="phoneNumber">
       <Comment>전화번호</Comment>
-      <DasType>varchar(45)|0s</DasType>
+      <DasType>text|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>

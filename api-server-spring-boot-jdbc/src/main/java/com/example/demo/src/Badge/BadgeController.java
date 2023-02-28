@@ -5,6 +5,7 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.Badge.model.GetBadgeRes;
 import com.example.demo.src.Badge.model.PostBadgeReq;
 import com.example.demo.src.Badge.model.PostBadgeRes;
+import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,15 @@ public class BadgeController {
 
     @Autowired
     private final BadgeProvider badgeProvider;
-
     @Autowired
     private final BadgeService badgeService;
+    @Autowired
+    private final JwtService jwtService;
 
-
-    public BadgeController(BadgeProvider badgeProvider, BadgeService badgeService) {
+    public BadgeController(BadgeProvider badgeProvider, BadgeService badgeService, JwtService jwtService) {
         this.badgeProvider = badgeProvider;
         this.badgeService = badgeService;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -75,6 +77,12 @@ public class BadgeController {
             return new BaseResponse<>(PATCH_BADGES_EMPTY_USER_ID);
         }
         try {
+            //jwt에서 idx 추출.
+            int userIdByJwt = jwtService.getUserId();
+            //userIdx와 접근한 유저가 같은지 확인
+            if (userId != userIdByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             badgeService.patchBadge(badgeId,userId);
             String result = "";
             return new BaseResponse<>(result);

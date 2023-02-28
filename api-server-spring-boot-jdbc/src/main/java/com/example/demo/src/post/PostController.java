@@ -3,6 +3,7 @@ package com.example.demo.src.post;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.post.model.*;
+import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,13 @@ public class PostController {
     private final PostProvider postProvider;
     @Autowired
     private final PostService postService;
+    @Autowired
+    private final JwtService jwtService;
 
-    public PostController(PostProvider postProvider, PostService postService) {
+    public PostController(PostProvider postProvider, PostService postService, JwtService jwtService) {
         this.postProvider = postProvider;
         this.postService = postService;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -106,7 +110,7 @@ public class PostController {
     }
 
     /**
-     * 게시물정보변경 API
+     * 게시물끌올 API
      * [PATCH] /posts/:post-id
      *
      * @return BaseResponse<String>
@@ -115,6 +119,12 @@ public class PostController {
     @PatchMapping("/pullUp/{post-id}")
     public BaseResponse<String> modifyUser(@PathVariable("post-id") int postId) {
         try {
+            //jwt에서 idx 추출.
+            int userIdByJwt = jwtService.getUserId();
+            //userIdx와 접근한 유저가 같은지 확인
+            if (postProvider.getPost(postId).getUserId() != userIdByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             postService.modifyPost(postId);
             String result = "";
             return new BaseResponse<>(result);
@@ -133,7 +143,12 @@ public class PostController {
     @PatchMapping("/status/{post-id}")
     public BaseResponse<String> deleteUser(@PathVariable("post-id") int postId){
         try {
-            //본인 확인 생략!
+            //jwt에서 idx 추출.
+            int userIdByJwt = jwtService.getUserId();
+            //userIdx와 접근한 유저가 같은지 확인
+            if (postProvider.getPost(postId).getUserId() != userIdByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             postService.deletePost(postId);
             String result = "";
             return new BaseResponse<>(result);

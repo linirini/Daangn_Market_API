@@ -4,6 +4,7 @@ import com.example.demo.src.post.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class PostDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    @Transactional
     public int createPost(PostPostReq postPostReq) {
         String createPostQuery = "insert into Post (userId, title, price, priceProposal,sharing,content,dealAddress) VALUES (?,?,?,?,?,?,?)";
         Object[] createPostParams = new Object[]{postPostReq.getUserId(),postPostReq.getTitle(),postPostReq.getPrice(),postPostReq.getPriceProposal(),postPostReq.getSharing(),postPostReq.getContent(),postPostReq.getDealAddress()};
@@ -38,6 +40,7 @@ public class PostDao {
         return postId;
     }
 
+    @Transactional(readOnly = true)
     public List<GetAllPostRes> getPostsByAddress(String address) {
         String getPostsByAddressQuery = "select Post.*, PostImageUrl.imageUrl from Post join PostImageUrl WHERE Post.status = 'ACTIVE' AND Post.postId = PostImageUrl.postId AND PostImageUrl.imageUrlStatus = 'ACTIVE' AND dealAddress = ?";
         String getPostsByAddressParams = address;
@@ -57,6 +60,7 @@ public class PostDao {
                 getPostsByAddressParams);
     }
 
+    @Transactional(readOnly = true)
     public GetPostRes getPost(int postId) {
         String getPostQuery = "select * from Post where postId = ? where status = ?";
         List<GetPostImageUrlRes> tmp = getAllPostImageUrl(postId);
@@ -87,21 +91,24 @@ public class PostDao {
                 getAllPostImageUrlParam);
     }
 
+    @Transactional
     public int modifyPost(int postId) {
         String modifyPostQuery = "update Post set pullUp = ?, updatedAt = current_timestamp where postId = ?";
         Object[] modifyPostParams = new Object[]{"ACTIVE",postId};
         return this.jdbcTemplate.update(modifyPostQuery,modifyPostParams);
     }
 
+    @Transactional
     public int deletePost(int postId) {
         String deletePostQuery = "update Post set status = ?, updatedAt = current_timestamp where postId = ? ";
         Object[] deletePostParams = new Object[]{"DELETED", postId};
         return this.jdbcTemplate.update(deletePostQuery,deletePostParams);
     }
 
+    @Transactional(readOnly = true)
     public int checkPostId(Integer postId) {
-        String checkPostIdQuery = "select exists(select postId from Post where postId = ?)";
-        int checkPostIdParam = postId;
+        String checkPostIdQuery = "select exists(select postId from Post where postId = ? and status = ?)";
+        Object[] checkPostIdParam = new Object[]{postId,"ACTIVE"};
         return this.jdbcTemplate.queryForObject(checkPostIdQuery,
                 int.class,
                 checkPostIdParam);

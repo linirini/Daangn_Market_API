@@ -12,6 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostLoginReq {
 
+    @JsonProperty("nick_name")
+    private String nickName;
     @JsonProperty("phone_number")
     private String phoneNumber;
 

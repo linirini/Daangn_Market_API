@@ -5,6 +5,7 @@ import com.example.demo.src.address.model.PostAddressReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 
@@ -18,7 +19,7 @@ public class AddressDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-
+    @Transactional
     public int createAddress(PostAddressReq postAddressReq) {
         String createAddressQuery = "insert into Address (userId, address, latitude, longitude) VALUES (?,?,?,?)";
         Object[] createAddressParams = new Object[]{postAddressReq.getUserId(), postAddressReq.getAddress(), postAddressReq.getLatitude(), postAddressReq.getLongitude()};
@@ -34,6 +35,7 @@ public class AddressDao {
         return addressId;
     }
 
+    @Transactional(readOnly = true)
     public int checkAddressId(int addressId) {
         String checkAddressIdQuery = "select exists(select addressId from Address where addressId = ? and status = ?)";
         Object[] checkAddressIdParam = new Object[]{addressId,"ACTIVE"};
@@ -42,6 +44,7 @@ public class AddressDao {
                 checkAddressIdParam);
     }
 
+    @Transactional
     public int patchAddress(int addressId, int userId) {
         String modifyOriginAddressQuery = "update Address set addressStatus = ? where userId = ? and addressStatus = ? and status = ?";
         Object[] modifyOriginAddressParams = new Object[]{"DELETED", userId, "ACTIVE", "ACTIVE"};
@@ -51,6 +54,7 @@ public class AddressDao {
         return this.jdbcTemplate.update(modifyAddressQuery,modifyAddressParams);
     }
 
+    @Transactional(readOnly = true)
     public GetAddressRes getAddress(int addressId) {
         String getAddressQuery = "select * from Address where addressId = ? and status = ?";
         Object[] getAddressParam = new Object[]{addressId,"ACTIVE"};
@@ -66,12 +70,14 @@ public class AddressDao {
                 getAddressParam);
     }
 
+    @Transactional
     public int deleteAddress(int addressId) {
         String deleteAddressQuery = "update Address set status = ? where addressId = ?";
         Object[] deleteAddressParams = new Object[]{"DELETED",addressId};
         return this.jdbcTemplate.update(deleteAddressQuery,deleteAddressParams);
     }
 
+    @Transactional
     public void patchDeleteAddress(int addressId, int userId) {
         String modifyOriginAddressQuery = "update Address set addressStatus = ? where userId = ? and addressStatus = ? and status = ?";
         Object[] modifyOriginAddressParams = new Object[]{"ACTIVE", userId, "DELETED", "ACTIVE"};

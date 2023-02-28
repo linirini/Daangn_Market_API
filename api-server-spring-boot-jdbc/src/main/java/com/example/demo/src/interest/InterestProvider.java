@@ -59,4 +59,17 @@ public class InterestProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public GetInterestRes getInterest(int interestId) throws BaseException {
+        if (checkInterestId(interestId) == 0) {
+            throw new BaseException(DELETE_INTERESTS_UNKNOWN_INTEREST_ID);
+        }
+        try {
+            GetInterestRes getInterestRes = interestDao.getInterest(interestId);
+            return getInterestRes;
+        } catch (Exception exception) {
+            logger.error("App - getInterestRes Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

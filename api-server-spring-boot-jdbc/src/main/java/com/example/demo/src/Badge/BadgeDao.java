@@ -5,6 +5,7 @@ import com.example.demo.src.Badge.model.PostBadgeReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -19,12 +20,14 @@ public class BadgeDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    @Transactional(readOnly = true)
     public int checkBadgeByUserIdAndBadgeTabId(Integer userId, Integer badgeTagId) {
         String checkBadgeQuery = "select exists(select badgeId from Badge where userId = ? AND badgeTagId = ?)";
         Object[] checkBadgeParams = new Object[]{userId, badgeTagId};
         return this.jdbcTemplate.queryForObject(checkBadgeQuery,int.class, checkBadgeParams);
     }
 
+    @Transactional
     public int createBadge(PostBadgeReq postBadgeReq) {
         String createBadgeQuery = "insert into Badge (userId, badgeTagId) VALUES (?,?)";
         Object[] createBadgeParams = new Object[]{postBadgeReq.getUserId(), postBadgeReq.getBadgeTagId()};
@@ -34,6 +37,7 @@ public class BadgeDao {
         return this.jdbcTemplate.queryForObject(lastInsertIdQuery,int.class);
     }
 
+    @Transactional(readOnly = true)
     public GetBadgeRes getBadge(int badgeId) {
         String getBadgeByBadgeIdQuery = "select * FROM Badge WHERE badgeId = ?";
         int getBadgeByBadgeIdParam = badgeId;
@@ -46,6 +50,7 @@ public class BadgeDao {
                 getBadgeByBadgeIdParam);
     }
 
+    @Transactional
     public int patchBadge(int badgeId,int userId) {
         String setOriginRepresentativeBadgeQuery="update Badge set badgeStatus = ? where badgeStatus = ? and userId = ?";
         Object[] setOriginRepresentativeBadgeParams = new Object[]{"DELETED","ACTIVE",userId};
@@ -55,6 +60,7 @@ public class BadgeDao {
         return this.jdbcTemplate.update(setRepresentativeBadgeQuery,setRepresentativeBadgeParams);
     }
 
+    @Transactional(readOnly = true)
     public List<GetBadgeRes> getAllBadge(int userId) {
         String getBadgeByBadgeIdQuery = "select * FROM Badge WHERE userId = ?";
         int getBadgeByBadgeIdParam = userId;
@@ -67,6 +73,7 @@ public class BadgeDao {
                 getBadgeByBadgeIdParam);
     }
 
+    @Transactional(readOnly = true)
     public int checkBadgeId(int badgeId) {
         String checkBadgeIdQuery = "select exists(select badgeId From Badge where badgeId = ?)";
         int checkBadgeIdParam = badgeId;

@@ -28,11 +28,5 @@ public class User {
     private double retransactionHopeRate;
     @JsonProperty("account_status")
     private String accountStatus;
-    @JsonProperty("status")
-    private String status;
-    @JsonProperty("created_at")
-    private String createdAt;
-    @JsonProperty("updated_at")
-    private String updatedAt;
 
 }

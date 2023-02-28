@@ -2,16 +2,17 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.GetUserRes;
 import com.example.demo.src.user.model.PostLoginReq;
 import com.example.demo.src.user.model.PostLoginRes;
+import com.example.demo.src.user.model.User;
+import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -20,7 +21,7 @@ import static com.example.demo.config.BaseResponseStatus.*;
 public class UserProvider {
 
     private final UserDao userDao;
-    //private final JwtService jwtService;
+    private final JwtService jwtService;
 
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -28,7 +29,7 @@ public class UserProvider {
     @Autowired
     public UserProvider(UserDao userDao, JwtService jwtService) {
         this.userDao = userDao;
-        //this.jwtService = jwtService;
+        this.jwtService = jwtService;
     }
 
     public GetUserRes getUser(int userId) throws BaseException {
@@ -64,24 +65,22 @@ public class UserProvider {
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         try {
-            //User user = userDao.getPwd(postLoginReq);
-
-            //String encryptPwd;
-            /*try {
-                encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
+            User user = userDao.getUserByNickName(postLoginReq.getNickName());
+            String phoneNumber;
+            try {
+                phoneNumber = new AES128(Secret.USER_INFO_PHONENUMBER_KEY).decrypt(user.getPhoneNumber());
             } catch (Exception exception) {
                 logger.error("App - logIn Provider Encrypt Error", exception);
-                throw new BaseException(PASSWORD_DECRYPTION_ERROR);
-            }*/
-            List<GetUserRes> userResList = userDao.getUsersByPhoneNumber(postLoginReq.getPhoneNumber());
-            for(GetUserRes userRes : userResList) {
-                if (userRes.getPhoneNumber().equals(postLoginReq.getPhoneNumber()) && userRes.getAccountStatus().equals("ACTIVE")) {
-                    int userId = userRes.getUserId();
-                    //String jwt = jwtService.createJwt(userId);
-                    return new PostLoginRes(userId);
-                }
+                throw new BaseException(PHONENUMBER_DECRYPTION_ERROR);
             }
-            throw new BaseException(FAILED_TO_LOGIN);
+            if(postLoginReq.getPhoneNumber().equals(phoneNumber)){
+                int userId = userDao.getUserByPhoneNumber(user.getPhoneNumber()).getUserId();
+                String jwt = jwtService.createJwt(userId);
+                return new PostLoginRes(userId,jwt);
+            }
+            else{
+                throw new BaseException(FAILED_TO_LOGIN);
+            }
         } catch (Exception exception) {
             logger.error("App - logIn Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);

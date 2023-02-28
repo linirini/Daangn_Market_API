@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostUserRes {
-    //private String jwt;
+    private String jwt;
 
     @JsonProperty("user_id")
     private int userId;

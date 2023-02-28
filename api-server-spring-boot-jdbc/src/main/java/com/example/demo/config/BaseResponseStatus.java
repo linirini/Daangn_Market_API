@@ -26,6 +26,7 @@ public enum BaseResponseStatus {
 
     // [POST] /users
     POST_USERS_EMPTY_PHONENUMBER(false, 2015, "전화번호를 입력해주세요."),
+    POST_USERS_EMPTY_NICK_NAME(false, 2070," 닉네임을 입력해주세요."),
     POST_USERS_INVALID_PHONENUMBER(false, 2016, "전화번호 형식을 확인해주세요."),
 
     // [GET] /users/{user-id}
@@ -112,7 +113,7 @@ public enum BaseResponseStatus {
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     POST_USERS_EXISTS_PHONENUMBER(false, 3017, "이미 가입된 전화번호입니다."),
     PATCH_USERS_EXISTS_NICK_NAME(false, 3019, "이미 사용중인 닉네임입니다."),
-    FAILED_TO_LOGIN(false, 3014, "없는 아이디거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_LOGIN(false, 3014, "로그인에 실패하였습니다."),
 
     /**
      * 4000 : Database, Server 오류
@@ -147,8 +148,8 @@ public enum BaseResponseStatus {
     //[PATCH] /addresses/status/:address-id
     MODIFY_FAIL_ADDRESS(false,4015,"주소 정보 수정에 실패하였습니다."),
 
-    PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
+    PHONENUMBER_ENCRYPTION_ERROR(false, 4011, "전화번호 암호화에 실패하였습니다."),
+    PHONENUMBER_DECRYPTION_ERROR(false, 4012, "전화번호 복호화에 실패하였습니다.");
 
 
     // 5000 : 필요시 만들어서 쓰세요
