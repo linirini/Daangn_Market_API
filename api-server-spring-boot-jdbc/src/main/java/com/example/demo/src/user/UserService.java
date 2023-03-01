@@ -41,7 +41,9 @@ public class UserService {
         if(userProvider.checkNickName(postUserReq.getNickName()) == 1){
             throw new BaseException(PATCH_USERS_EXISTS_NICK_NAME);
         }
-
+        if(userProvider.checkEmail(postUserReq.getEmailAddress())==1){
+            throw new BaseException(DUPLICATED_EMAIL);
+        }
         String phoneNumber;
         try{
             phoneNumber = new AES128(Secret.USER_INFO_PHONENUMBER_KEY).encrypt(postUserReq.getPhoneNumber());

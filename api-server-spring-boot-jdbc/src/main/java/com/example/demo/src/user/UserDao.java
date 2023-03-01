@@ -138,9 +138,6 @@ public class UserDao {
                 getUserParams);
     }
     
-/*
-
-
     public int checkEmail(String email){
         String checkEmailQuery = "select exists(select email from UserInfo where email = ?)";
         String checkEmailParams = email;
@@ -151,7 +148,7 @@ public class UserDao {
     }
 
 
-
+/*
     public User getPwd(PostLoginReq postLoginReq){
         String getPwdQuery = "select userIdx, password,email,userName,ID from UserInfo where ID = ?";
         String getPwdParams = postLoginReq.getId();

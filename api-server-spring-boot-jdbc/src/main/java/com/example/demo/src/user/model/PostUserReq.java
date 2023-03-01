@@ -16,6 +16,8 @@ public class PostUserReq {
     private String nickName;
     @JsonProperty("phone_number")
     private String phoneNumber;
+    @JsonProperty("email_address")
+    private String emailAddress;
 
 /*    private String UserName;
     private String id;

@@ -28,6 +28,8 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_PHONENUMBER(false, 2015, "전화번호를 입력해주세요."),
     POST_USERS_EMPTY_NICK_NAME(false, 2070," 닉네임을 입력해주세요."),
     POST_USERS_INVALID_PHONENUMBER(false, 2016, "전화번호 형식을 확인해주세요."),
+    POST_USERS_INVALID_EMAIL_ADDRESS(false,2080,"이메일 양식을 확인해주세요."),
+    POST_USERS_EMPTY_EMAIL_ADDRESS(false,2081,"이메일을 입력해주세요"),
 
     // [GET] /users/{user-id}
     GET_USERS_UNKNOWN_USER_ID(false, 2034, "존재하지 않는 유저입니다."),

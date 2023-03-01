@@ -96,7 +96,6 @@ public class UserProvider {
         }
     }
 
-    /*
     public int checkEmail(String email) throws BaseException{
         try{
             return userDao.checkEmail(email);
@@ -105,5 +104,5 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-    */
+
 }

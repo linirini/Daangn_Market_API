@@ -4,12 +4,14 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
+import com.example.demo.utils.KakaoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.utils.ValidationRegex.isRegexEmail;
 import static com.example.demo.utils.ValidationRegex.isRegexPhoneNumber;
 
 @RestController
@@ -23,12 +25,14 @@ public class UserController {
     private final UserService userService;
     @Autowired
     private final JwtService jwtService;
+    @Autowired
+    private final KakaoService kakaoService;
 
-
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService, KakaoService kakaoService) {
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.kakaoService = kakaoService;
     }
 
     /**
@@ -68,6 +72,12 @@ public class UserController {
         if (!isRegexPhoneNumber(postUserReq.getPhoneNumber())) {
             return new BaseResponse<>(POST_USERS_INVALID_PHONENUMBER);
         }
+        if (!isRegexEmail(postUserReq.getEmailAddress())) {
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL_ADDRESS);
+        }
+        if (postUserReq.getEmailAddress() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL_ADDRESS);
+        }
         try {
             PostUserRes postUserRes = userService.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
@@ -103,6 +113,19 @@ public class UserController {
     }
 
     /**
+     * 소셜 로그인 토큰 받기 API
+     * [POST] /oauth
+     *
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @GetMapping("/oauth")
+    public BaseResponse<String> socialLogInRedirected(@RequestParam("code") String code) {
+        String accessToken = kakaoService.getAccessToken(code);
+        return new BaseResponse<>(accessToken);
+    }
+
+    /**
      * 유저정보변경 API
      * [PATCH] /users/:user-id
      *
@@ -118,7 +141,7 @@ public class UserController {
             if (userId != userIdByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            if(user.getNickName() == null){
+            if (user.getNickName() == null) {
                 throw new BaseException(PATCH_USERS_EMPTY_NICK_NAME);
             }
             PatchUserReq patchUserReq = new PatchUserReq(userId, user.getNickName(), user.getProfilePhoto());
